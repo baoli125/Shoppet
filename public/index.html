@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoppet - Nền tảng toàn diện cho thú cưng</title>
+    <meta name="description" content="Shoppet - Nền tảng toàn diện dành cho thú cưng, tích hợp mua sắm sản phẩm, dịch vụ chăm sóc, quản lý sức khỏe và cộng đồng yêu thú cưng.">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#home" class="logo">
+                    <img src="/images/logo.png" alt="Shoppet" class="logo-img" loading="lazy">
+                    Shop<span>pet</span>
+                </a>
+                <ul class="nav-links">
+                    <li>
+                        <a href="#home" class="nav-link active">
+                            <span class="nav-icon">🏠</span>
+                            <span class="nav-text">Trang chủ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#marketplace" class="nav-link">
+                            <span class="nav-icon">🛍️</span>
+                            <span class="nav-text">Marketplace</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#ai-assistant" class="nav-link">
+                            <span class="nav-icon">🤖</span>
+                            <span class="nav-text">Trợ lý AI</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#pet-profile" class="nav-link">
+                            <span class="nav-icon">📋</span>
+                            <span class="nav-text">Hồ sơ thú cưng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#community" class="nav-link">
+                            <span class="nav-icon">👥</span>
+                            <span class="nav-text">Cộng đồng</span>
+                        </a>
+                    </li>
+                    <li>    
+                        <a href="#orders" class="nav-link" id="orders-nav-link">
+                            <span class="nav-icon">🚚</span>
+                            <span class="nav-text"> hàng</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#cart" class="nav-link cart-icon">
+                            <span class="nav-icon">🛒</span>
+                            <span class="nav-text">Giỏ hàng</span>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
+                    <li class="user-menu">
+                        <a href="javascript:void(0)" class="nav-link login-btn" id="login-btn" onclick="openModal('login-modal')">
+                            <span class="nav-icon">🔐</span>
+                            <span class="nav-text">Đăng nhập</span>
+                        </a>
+                        <div id="user-info" class="user-info" style="display: none;">
+                            <div class="user-avatar" id="user-avatar">US</div>
+                            <span class="user-name" id="username-display"></span>
+                            <button class="btn btn-small btn-outline" onclick="logout()">🚪 Đăng xuất</button>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading">
+            <div class="loading-pet">🐾</div>
+            <div class="spinner"></div>
+            <p>Đang tải Shoppet...</p>
+        </div>
+
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <!-- Hero Carousel -->
+            <div class="hero-carousel">
+                <div class="carousel-slide active" style="background-image: url('/images/dog_cat/dog_cat1.jpg');">
+                    <div class="carousel-content">
+                        <h1>Chào mừng đến với Shoppet</h1>
+                        <p>Nơi thú cưng của bạn nhận được sự chăm sóc tốt nhất</p>
+                        <a href="#marketplace" class="btn btn-primary btn-large">🐾 Bắt đầu ngay</a>
+                    </div>
+                </div>
+                <div class="carousel-slide" style="background-image: url('/images/dog_cat/dog_cat2.jpg');">
+                    <div class="carousel-content">
+                        <h1>Chăm sóc toàn diện</h1>
+                        <p>Mọi thứ bạn cần cho người bạn bốn chân</p>
+                        <a href="#services" class="btn btn-primary btn-large">❤️ Khám phá dịch vụ</a>
+                    </div>
+                </div>
+                <div class="carousel-slide" style="background-image: url('/images/dog_cat/dog_cat3.jpg');">
+                    <div class="carousel-content">
+                        <h1>Cộng đồng yêu thú cưng</h1>
+                        <p>Kết nối và chia sẻ với những người yêu thú cưng</p>
+                        <a href="#community" class="btn btn-primary btn-large">👥 Tham gia ngay</a>
+                    </div>
+                </div>
+                <div class="carousel-indicators">
+                    <div class="carousel-indicator active" onclick="currentSlide(0)"></div>
+                    <div class="carousel-indicator" onclick="currentSlide(1)"></div>
+                    <div class="carousel-indicator" onclick="currentSlide(2)"></div>
+                </div>
+            </div>
+
+            <div class="container">
+                <h2 class="section-title">Vì sao chọn Shoppet?</h2>
+                <p class="section-subtitle">Chúng tôi mang đến trải nghiệm chăm sóc thú cưng toàn diện và đầy yêu thương</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🛍️</div>
+                        <h3>Marketplace Đa dạng</h3>
+                        <p>Sản phẩm chất lượng cao từ thương hiệu uy tín, dịch vụ chăm sóc chuyên nghiệp từ các đối tác đã được xác minh.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>Trợ lý AI Thông minh</h3>
+                        <p>AI tư vấn dinh dưỡng, sức khỏe và hỗ trợ y tế ban đầu với độ chính xác cao, luôn sẵn sàng 24/7.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📋</div>
+                        <h3>Hồ sơ Thú cưng</h3>
+                        <p>Quản lý toàn bộ thông tin sức khỏe, lịch tiêm chủng và bảo hiểm cho thú cưng của bạn một cách khoa học.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎮</div>
+                        <h3>Cộng đồng & Gamification</h3>
+                        <p>Biến việc chăm sóc thú cưng thành trò chơi thú vị, tích điểm đổi quà và kết nối với cộng đồng yêu thú cưng.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marketplace Page -->
+        <section id="marketplace" class="page">
+            <div class="container">
+                <h2 class="section-title">Marketplace</h2>
+                <p class="section-subtitle">Khám phá thế giới sản phẩm và dịch vụ tốt nhất cho thú cưng của bạn</p>
+
+                <!-- Marketplace Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="products">🍖 Sản phẩm</button>
+                    <button class="tab-btn" data-tab="services">🏥 Dịch vụ</button>
+                </div>
+
+                <!-- Products -->
+                <div id="products-tab" class="tab-content active">
+                    <div class="products-grid" id="products-grid">
+                        <!-- Products loaded by JS -->
+                    </div>
+                </div>
+
+                <!-- Services -->
+                <div id="services-tab" class="tab-content">
+                    <div class="services-grid" id="services-grid">
+                        <!-- Services loaded by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Orders Page -->
+        <section id="orders" class="page">
+            <div class="container">
+                <h2 class="section-title" id="orders-title">🚚 Đơn hàng của bạn</h2>
+                <p class="section-subtitle" id="orders-subtitle">Theo dõi và quản lý đơn hàng của bạn một cách dễ dàng</p>
+                
+                <div class="orders-tabs">
+                    <button class="tab-btn active" data-tab="customer-orders">🛒 Đơn hàng của tôi</button>
+                    <button class="tab-btn" data-tab="seller-orders" id="seller-orders-tab-btn" style="display: none;">🏪 Quản lý đơn hàng</button>
+                </div>
+
+                <div id="customer-orders-tab" class="tab-content active">
+                    <div id="customer-orders-container">
+                        <!-- Đơn hàng của khách hàng -->
+                    </div>
+                </div>
+
+                <div id="seller-orders-tab" class="tab-content">
+                    <div id="seller-orders-container">
+                        <!-- Đơn hàng của người bán -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Assistant Page -->
+        <section id="ai-assistant" class="page">
+            <div class="container">
+                <h2 class="section-title">🤖 Trợ lý AI Shoppet</h2>
+                <p class="section-subtitle">Bác sĩ thú y ảo luôn sẵn sàng tư vấn cho thú cưng của bạn 24/7</p>
+                
+                <div class="ai-chat">
+                    <div class="chat-header">
+                        <h3>🤖 Trợ lý AI Shoppet</h3>
+                        <p>Tôi có thể giúp gì cho thú cưng của bạn hôm nay?</p>
+                    </div>
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot-message">
+                            🐾 Xin chào! Tôi là trợ lý AI của Shoppet. Tôi có thể giúp bạn tư vấn về dinh dưỡng, sức khỏe, hoặc đặt lịch khám cho thú cưng. Hãy cho tôi biết tôi có thể giúp gì cho bạn và người bạn bốn chân của mình?
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="chat-input">
+                            <input type="text" id="chat-input" placeholder="Nhập câu hỏi về thú cưng của bạn...">
+                            <button id="send-message" class="btn btn-primary">📤 Gửi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pet Profile Page -->
+        <section id="pet-profile" class="page">
+            <div class="container">
+                <h2 class="section-title">📋 Hồ sơ Thú cưng</h2>
+                <p class="section-subtitle">Quản lý toàn diện thông tin sức khỏe và bảo hiểm cho các thành viên bốn chân</p>
+                
+                <div class="pet-profile-section">
+                    <div class="pet-sidebar">
+                        <div id="pet-profiles-container">
+                            <!-- Pet profiles loaded by JS -->
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('add-pet-modal')" style="width: 100%; margin-top: 20px;">
+                             + Thêm thú cưng
+                        </button>
+                    </div>
+                    
+                    <div class="pet-content">
+                        <div id="pet-details-container">
+                            <div class="text-center">
+                                <div class="pet-avatar">🐾</div>
+                                <h3>Chào mừng đến với Shoppet!</h3>
+                                <p>Hãy thêm thú cưng đầu tiên của bạn để bắt đầu trải nghiệm</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Community Page -->
+        <section id="community" class="page">
+            <div class="container">
+                <h2 class="section-title">👥 Cộng đồng & Gamification</h2>
+                <p class="section-subtitle">Biến việc chăm sóc thú cưng thành trải nghiệm thú vị và đầy hứng khởi</p>
+
+                <div class="gamification-section">
+                    <div class="points-display">
+                        <h3>✨ Điểm thưởng của bạn</h3>
+                        <div class="points-count" id="user-points">0</div>
+                        <p>Tiếp tục chăm sóc thú cưng để nhận thêm điểm thưởng!</p>
+                    </div>
+
+                    <h3 class="text-center">🏆 Huy hiệu của bạn</h3>
+                    <div class="badges-grid" id="badges-grid">
+                        <!-- Badges loaded by JS -->
+                    </div>
+                </div>
+
+                <div class="community-grid">
+                    <div class="community-card">
+                        <div class="community-icon">🏆</div>
+                        <h3>Bảng xếp hạng</h3>
+                        <p>So tài với các thành viên khác trong cộng đồng yêu thú cưng</p>
+                        <button class="btn btn-outline">📊 Xem bảng xếp hạng</button>
+                    </div>
+                    <div class="community-card">
+                        <div class="community-icon">🎁</div>
+                        <h3>Đổi điểm thưởng</h3>
+                        <p>Đổi điểm lấy voucher giảm giá, quà tặng và ưu đãi đặc biệt</p>
+                        <button class="btn btn-outline">🎯 Đổi quà ngay</button>
+                    </div>
+                    <div class="community-card">
+                        <div class="community-icon">👥</div>
+                        <h3>Cộng đồng Shoppet</h3>
+                        <p>Kết nối và chia sẻ kinh nghiệm với cộng đồng người yêu thú cưng</p>
+                        <button class="btn btn-outline">💬 Tham gia ngay</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cart Page -->
+        <section id="cart" class="page">
+            <div class="container">
+                <h2 class="section-title">🛒 Giỏ hàng của bạn</h2>
+                <p class="section-subtitle">Kiểm tra và thanh toán đơn hàng của bạn</p>
+                
+                <div id="cart-container">
+                    <!-- Cart content loaded by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="logo" style="color: white; margin-bottom: 20px;">
+                <img src="/images/logo.png" alt="Shoppet" class="logo-img" loading="lazy">
+                Shop<span style="color: var(--secondary);">pet</span>
+            </div>
+            <p style="margin-bottom: 20px; font-size: 1.1rem;">Nền tảng toàn diện cho thú cưng của bạn</p>
+            <div class="contact-info">
+                <p>📧 Liên hệ: <a href="mailto:ShoppetLazyBeo@gmail.com">ShoppetLazyBeo@gmail.com</a></p>
+                <p style="margin-top: 10px;">📞 Hotline: 0900 123 456</p>
+            </div>
+            <p style="margin-top: 30px; color: rgba(255,255,255,0.8);">&copy; 2024 Shoppet. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔐 Đăng nhập Shoppet</h2>
+                <button class="modal-close" onclick="closeModal('login-modal')">&times;</button>
+            </div>
+            <div class="auth-section">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Đăng nhập</button>
+                    <button class="auth-tab" data-tab="register">Đăng ký</button>
+                </div>
+                
+                <div class="auth-content">
+                    <form id="login-form" class="auth-form active">
+                        <div class="form-group">
+                            <label for="login-username">👤 Tên đăng nhập</label>
+                            <input type="text" id="login-username" name="username" required placeholder="Nhập tên đăng nhập">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">🔒 Mật khẩu</label>
+                            <input type="password" id="login-password" name="password" required placeholder="Nhập mật khẩu">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">🚀 Đăng nhập</button>
+                    </form>
+                    
+                    <form id="register-form" class="auth-form">
+                        <div class="form-group">
+                            <label for="register-displayName">👤 Tên hiển thị *</label>
+                            <input type="text" id="register-displayName" name="displayName" required placeholder="Tên hiển thị của bạn">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-username">📝 Tên đăng nhập *</label>
+                            <input type="text" id="register-username" name="username" required placeholder="Tên đăng nhập">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">📧 Email *</label>
+                            <input type="email" id="register-email" name="email" required placeholder="email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">🔒 Mật khẩu *</label>
+                            <input type="password" id="register-password" name="password" required placeholder="Mật khẩu (ít nhất 6 ký tự)">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-role">🎭 Vai trò *</label>
+                            <select id="register-role" name="role" class="form-control" required>
+                                <option value="user">👤 Người dùng</option>
+                                <option value="seller">🏪 Người bán</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">🎉 Đăng ký</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Pet Modal -->
+    <div id="add-pet-modal" class="modal">
+        <div class="modal-content">
+            <div class="auth-section" style="max-width: 100%; box-shadow: none; padding: 0;">
+                <form id="add-pet-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="petName">📛 Tên thú cưng *</label>
+                        <input type="text" id="petName" name="petName" placeholder="Nhập tên thú cưng" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="petNickname">🎭 Biệt danh</label>
+                        <input type="text" id="petNickname" name="petNickname" placeholder="Biệt danh (nếu có)">
+                    </div>
+                    <div class="form-group">
+                        <label for="petType">🐾 Loại thú cưng *</label>
+                        <select id="petType" name="petType" required>
+                            <option value="">Chọn loại thú cưng</option>
+                            <option value="dog">🐕 Chó</option>
+                            <option value="cat">🐈 Mèo</option>
+                            <option value="bird">🐦 Chim</option>
+                            <option value="fish">🐠 Cá</option>
+                            <option value="rabbit">🐰 Thỏ</option>
+                            <option value="hamster">🐹 Hamster</option>
+                            <option value="other">❓ Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="petBreed">🧬 Giống *</label>
+                        <input type="text" id="petBreed" name="petBreed" placeholder="Ví dụ: Poodle, Golden Retriever..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="petGender">⚧ Giới tính *</label>
+                        <select id="petGender" name="petGender" required>
+                            <option value="">Chọn Giới tính</option>
+                            <option value="Đực">♂ Đực</option>
+                            <option value="Cái">♀ Cái</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="petAge">🎂 Tuổi (năm) *</label>
+                        <input type="number" id="petAge" name="petAge" min="0" max="99" placeholder="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="petWeight">⚖️ Cân nặng (kg) *</label>
+                        <input type="number" id="petWeight" name="petWeight" min="0" step="0.1" placeholder="0.0" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">✅ Thêm thú cưng</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
+

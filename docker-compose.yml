@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  shoppet:
+    build: .
+    ports:
+      - "3000:3000"
+    container_name: shoppet-demo
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ./data:/app/data  # Mount thư mục data để lưu trữ database
+      - ./backups:/app/backups  # Mount thư mục backups
+

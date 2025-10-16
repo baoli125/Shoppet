@@ -1,0 +1,22 @@
+# Database files
+/data/
+/backups/
+*.db
+*.db-journal
+
+# Environment variables
+.env
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
