@@ -2174,7 +2174,7 @@ function getDetailedDefaultResponse(message) {
 • Hoặc triệu chứng nào khác bạn quan sát thấy!`;
     }
     
-    return `🤔 Tôi chưa hiểu rõ vấn đề của bạn. Hãy thử các cách hỏi sau:
+    return `Hãy thử các cách hỏi sau:
 
 **VỀ BỆNH:**
 • "Sốt" • "Nôn" • "Tiêu chảy" • "Bỏ ăn" • "Ho"
