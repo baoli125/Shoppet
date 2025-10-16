@@ -2006,25 +2006,1095 @@ function addChatMessage(message, sender) {
 }
 
 function generateAIResponse(message) {
-    const lowerMessage = message.toLowerCase();
+    const lowerMessage = message.toLowerCase().trim();
     
-    if (lowerMessage.includes('thức ăn') || lowerMessage.includes('dinh dưỡng') || lowerMessage.includes('ăn gì')) {
-        return "Dựa trên loại thú cưng và cân nặng, tôi có thể tư vấn chế độ dinh dưỡng phù hợp. Bạn có thể cho tôi biết loại thú cưng (chó/mèo), cân nặng, tuổi và giống để được tư vấn chi tiết hơn?";
+    // === PHẢN HỒI MẶC ĐỊNH VỚI GỢI ý CỤ THỂ ===
+    if (isShortMessage(lowerMessage)) {
+        return getDefaultResponseWithSuggestions();
     }
-    
-    if (lowerMessage.includes('bệnh') || lowerMessage.includes('ốm') || lowerMessage.includes('sức khỏe')) {
-        return "Tôi có thể đưa ra gợi ý ban đầu về triệu chứng. Tuy nhiên, để chẩn đoán chính xác, bạn nên đặt lịch khám với bác sĩ thú y. Bạn có muốn tôi giúp đặt lịch khám không?";
+
+    // === PHÂN LOẠI CHÍNH BẰNG SWITCH-CASE ===
+    switch (true) {
+        case isNutritionRelated(lowerMessage):
+            return handleNutrition(lowerMessage);
+            
+        case isHealthRelated(lowerMessage):
+            return handleHealth(lowerMessage);
+            
+        case isSkinRelated(lowerMessage):
+            return handleSkinIssues(lowerMessage);
+            
+        case isBehaviorRelated(lowerMessage):
+            return handleBehaviorIssues(lowerMessage);
+            
+        case isCareRelated(lowerMessage):
+            return handleBasicCare(lowerMessage);
+            
+        case isEmergencyRelated(lowerMessage):
+            return handleEmergency(lowerMessage);
+            
+        case isVaccinationRelated(lowerMessage):
+            return handleVaccination(lowerMessage);
+            
+        default:
+            return getDetailedDefaultResponse(lowerMessage);
     }
-    
+}
+
+// === HÀM KIỂM TRA PHÂN LOẠI ===
+function isShortMessage(message) {
+    const shortMessages = ['hi', 'hello', 'chào', 'xin chào', 'hey', 'cún', 'mèo', ''];
+    return shortMessages.includes(message) || message.length < 3;
+}
+
+function isNutritionRelated(message) {
+    const keywords = ['thức ăn', 'dinh dưỡng', 'ăn gì', 'cho ăn', 'khẩu phần', 'đồ ăn', 'món ăn', 'sữa', 'bú'];
+    return keywords.some(keyword => message.includes(keyword));
+}
+
+function isHealthRelated(message) {
+    const symptoms = ['bệnh', 'ốm', 'sức khỏe', 'triệu chứng', 'sốt', 'nôn', 'ói', 'tiêu chảy', 'ỉa chảy', 
+                     'bỏ ăn', 'ho', 'khó thở', 'thở gấp', 'táo bón', 'đi ngoài', 'tiểu', 'đái', 'mắt', 'tai', 'mũi'];
+    return symptoms.some(symptom => message.includes(symptom));
+}
+
+function isSkinRelated(message) {
+    const keywords = ['da', 'lông', 'ngứa', 'ghẻ', 'rụng lông', 'dị ứng', 'mẩn đỏ', 'vảy', 'hói', 'bọ chét', 've'];
+    return keywords.some(keyword => message.includes(keyword));
+}
+
+function isBehaviorRelated(message) {
+    const keywords = ['cắn', 'sủa', 'gầm gừ', 'hung dữ', 'stress', 'lo lắng', 'sợ hãi', 'cào', 'phá', 'bậy', 'đi vệ sinh'];
+    return keywords.some(keyword => message.includes(keyword));
+}
+
+function isCareRelated(message) {
+    const keywords = ['tắm', 'vệ sinh', 'chăm sóc', 'cắt móng', 'đánh răng', 'chải lông', 'vệ sinh răng', 'tắm rửa'];
+    return keywords.some(keyword => message.includes(keyword));
+}
+
+function isEmergencyRelated(message) {
+    const keywords = ['cấp cứu', 'khẩn cấp', 'nguy hiểm', 'chảy máu', 'gãy xương', 'co giật', 'hôn mê', 'thở gấp', 'bất tỉnh'];
+    return keywords.some(keyword => message.includes(keyword));
+}
+
+function isVaccinationRelated(message) {
+    const keywords = ['tiêm', 'vaccine', 'phòng bệnh', 'tiêm phòng', 'chủng ngừa', 'tẩy giun'];
+    return keywords.some(keyword => message.includes(keyword));
+}
+
+// === PHẢN HỒI MẶC ĐỊNH VỚI GỢI Ý CHI TIẾT ===
+function getDefaultResponseWithSuggestions() {
     const responses = [
-        "Tôi có thể giúp gì cho thú cưng của bạn?",
-        "Hãy mô tả triệu chứng hoặc vấn đề của thú cưng để tôi tư vấn.",
-        "Bạn cần hỗ trợ về dinh dưỡng, sức khỏe hay chăm sóc thú cưng?",
-        "Tôi có thể giúp bạn đặt lịch khám với bác sĩ thú y hoặc tư vấn về sản phẩm phù hợp.",
-        "Để tư vấn chính xác hơn, bạn có thể cung cấp thông tin về loại thú cưng, tuổi và cân nặng?"
+        `🐾 **CHÀO MỪNG ĐẾN VỚI TRỢ LÝ SỨC KHỎE THÚ CƯNG!** 🐾
+
+Tôi có thể giúp bạn với các vấn đề sau:
+
+**🤒 VỀ SỨC KHỎE - hãy nói về:**
+• "Sốt", "Nôn", "Tiêu chảy", "Bỏ ăn"
+• "Ho", "Khó thở", "Thở gấp" 
+• "Mắt đỏ", "Tai có mùi", "Chảy nước mũi"
+• "Tiểu khó", "Táo bón", "Đi ngoài ra máu"
+
+**🍖 VỀ DINH DƯỠNG - hãy hỏi:**
+• "Thức ăn cho chó con/mèo con"
+• "Chó lớn ăn gì?", "Mèo già ăn gì?"
+• "Khẩu phần cho chó 5kg", "Mèo 4kg ăn bao nhiêu?"
+
+**🧴 VỀ DA & LÔNG - hãy mô tả:**
+• "Ngứa", "Rụng lông", "Ghẻ", "Dị ứng"
+• "Bọ chét", "Ve", "Nổi mẩn đỏ"
+
+**😟 VỀ HÀNH VI - hãy kể:**
+• "Cắn người", "Sủa nhiều", "Cào đồ"
+• "Stress", "Đi vệ sinh bậy", "Hung dữ"
+
+Hãy cho tôi biết vấn đề cụ thể!`,
+
+        `🏥 **TÔI CÓ THỂ TƯ VẤN CHI TIẾT VỀ:** 🏥
+
+**CÁC TRIỆU CHỨNG THƯỜNG GẶP:**
+📍 "Sốt" - nhiệt độ, cách hạ sốt
+📍 "Nôn" - phân loại nôn, xử lý tại nhà  
+📍 "Tiêu chảy" - nguyên nhân, điều trị
+📍 "Bỏ ăn" - biện pháp kích thích ăn
+📍 "Ho" - các loại ho, khi nào nguy hiểm
+
+**THEO ĐỘ TUỔI:**
+🐕 Chó con (0-1 tuổi) - Chó trưởng thành (1-7 tuổi) - Chó già (7+ tuổi)
+🐈 Mèo con (0-1 tuổi) - Mèo trưởng thành (1-7 tuổi) - Mèo già (7+ tuổi)
+
+**THEO GIỐNG:**
+• Chó nhỏ (Poodle, Chihuahua) • Chó lớn (Husky, Golden)
+• Mèo Ba Tư • Mèo Xiêm • Mèo ta
+
+Hãy nói "chó bị sốt" hoặc "mèo bỏ ăn" để được tư vấn chi tiết!`,
+
+        `💡 **GỢI Ý CÁCH HỎI ĐỂ ĐƯỢC TƯ VẤN TỐT NHẤT:** 💡
+
+Ví dụ về sức khỏe:
+• "Chó của tôi bị nôn và tiêu chảy"
+• "Mèo bỏ ăn 2 ngày rồi"
+• "Cún bị sốt 40 độ"
+• "Mèo đi tiểu ra máu"
+
+Ví dụ về dinh dưỡng:
+• "Thức ăn cho chó con 2 tháng tuổi"
+• "Mèo 5kg ăn bao nhiêu là đủ?"
+• "Chó già 10 tuổi nên ăn gì?"
+
+Ví dụ về chăm sóc:
+• "Cách tắm cho chó"
+• "Đánh răng cho mèo thế nào?"
+• "Bao lâu cắt móng một lần?"
+
+Hãy cho biết: LOÀI + TRIỆU CHỨNG + ĐỘ TUỔI (nếu có)!`
     ];
     
     return responses[Math.floor(Math.random() * responses.length)];
+}
+
+function getDetailedDefaultResponse(message) {
+    // Nếu có mention đến chó/mèo nhưng không rõ vấn đề
+    if (message.includes('chó') || message.includes('cún')) {
+        return `🐕 Bạn đang nói về chó phải không? Hãy cho tôi biết cụ thể:
+• "Chó bị sốt" - để biết nhiệt độ nguy hiểm
+• "Chó nôn ra bọt vàng" - phân loại nôn  
+• "Chó tiêu chảy" - nguyên nhân và xử lý
+• "Chó bỏ ăn" - biện pháp kích thích ăn
+• Hoặc bất kỳ triệu chứng nào khác!`;
+    }
+    
+    if (message.includes('mèo') || message.includes('mèo')) {
+        return `🐈 Bạn đang nói về mèo phải không? Hãy cho tôi biết cụ thể:
+• "Mèo bị nôn" - đặc biệt nôn búi lông
+• "Mèo tiểu khó" - bệnh nguy hiểm cần cấp cứu
+• "Mèo bỏ ăn" - mèo nhịn ăn rất nguy hiểm
+• "Mèo búi lông" - cách phòng và trị
+• Hoặc triệu chứng nào khác bạn quan sát thấy!`;
+    }
+    
+    return `🤔 Tôi chưa hiểu rõ vấn đề của bạn. Hãy thử các cách hỏi sau:
+
+**VỀ BỆNH:**
+• "Sốt" • "Nôn" • "Tiêu chảy" • "Bỏ ăn" • "Ho"
+• "Khó thở" • "Đi tiểu khó" • "Táo bón"
+
+**VỀ DINH DƯỠNG:**
+• "Thức ăn cho [chó/mèo] [tuổi]"
+• "[Chó/Mèo] [cân nặng] ăn bao nhiêu?"
+
+**VỀ CHĂM SÓC:**
+• "Cách tắm" • "Đánh răng" • "Cắt móng"
+
+Hãy cho tôi biết loại thú cưng và vấn đề cụ thể!`;
+}
+
+// === XỬ LÝ DINH DƯỠNG ===
+function handleNutrition(message) {
+    const isDog = message.includes('chó') || message.includes('cún');
+    const isCat = message.includes('mèo') || message.includes('mèo');
+    
+    if (isDog) return handleDogNutrition(message);
+    if (isCat) return handleCatNutrition(message);
+    
+    return `🍖 **BẠN MUỐN TƯ VẤN DINH DƯỠNG CHO:** 🍖
+• "Chó" - hay "Cún" 
+• "Mèo" - hay "Mèo"
+
+Hãy cho biết loại thú cưng để tôi tư vấn chi tiết về:
+• Thức ăn theo độ tuổi • Khẩu phần theo cân nặng
+• Thành phần dinh dưỡng • Thức ăn đặc biệt theo giống`;
+}
+
+function handleDogNutrition(message) {
+    switch (true) {
+        case message.includes('con') || message.includes('nhỏ'):
+            return getDogPuppyNutrition();
+        case message.includes('già') || message.includes('lão'):
+            return getDogSeniorNutrition();
+        case message.includes('lớn') || message.includes('trưởng thành'):
+            return getDogAdultNutrition();
+        default:
+            return getDogGeneralNutrition();
+    }
+}
+
+
+function handleCatNutrition(message) {
+    switch (true) {
+        case message.includes('con') || message.includes('nhỏ'):
+            return getCatKittenNutrition();
+        case message.includes('già') || message.includes('lão'):
+            return getCatSeniorNutrition();
+        case message.includes('lớn') || message.includes('trưởng thành'):
+            return getCatAdultNutrition();
+        default:
+            return getCatGeneralNutrition();
+    }
+}
+
+// === XỬ LÝ SỨC KHỎE ===
+function handleHealth(message) {
+    const isDog = message.includes('chó') || message.includes('cún');
+    const isCat = message.includes('mèo') || message.includes('mèo');
+    
+    // Xử lý các triệu chứng cụ thể
+    switch (true) {
+        case message.includes('sốt'):
+            return handleFever(message, isDog, isCat);
+        case message.includes('nôn') || message.includes('ói'):
+            return handleVomiting(message, isDog, isCat);
+        case message.includes('tiêu chảy') || message.includes('ỉa chảy'):
+            return handleDiarrhea(message, isDog, isCat);
+        case message.includes('bỏ ăn'):
+            return handleLossOfAppetite(message, isDog, isCat);
+        case message.includes('ho'):
+            return handleCoughing(message, isDog, isCat);
+        case message.includes('khó thở') || message.includes('thở gấp'):
+            return handleBreathingProblems(message, isDog, isCat);
+        default:
+            if (isDog) return getDogGeneralHealthAdvice();
+            if (isCat) return getCatGeneralHealthAdvice();
+            return getGeneralHealthAdvice();
+    }
+}
+
+// === CÁC HÀM CHI TIẾT CHO TỪNG TRIỆU CHỨNG ===
+function handleFever(message, isDog, isCat) {
+    if (isDog) {
+        return `🌡️ **SỐT Ở CHÓ - CHI TIẾT:** 🌡️
+
+    **NHIỆT ĐỘ BÌNH THƯỜNG:** 38.0 - 39.0°C
+    **SỐT NHẸ:** 39.1 - 39.4°C
+    **SỐT CAO:** 39.5 - 40.5°C  
+    **SỐT RẤT CAO (CẤP CỨU):** Trên 40.5°C
+
+    **DẤU HIỆU NHẬN BIẾT:**
+    • Mũi khô, nóng • Thở nhanh, hổn hển
+    • Run rẩy • Lờ đờ, bỏ ăn
+    • Mắt đỏ • Nướu đỏ sẫm
+
+    **XỬ LÝ TẠI NHÀ:**
+    • Cho uống nước mát • Chườm mát vùng bẹn, nách
+    • Để nơi thoáng mát • Theo dõi nhiệt độ 2h/lần
+
+    **CẦN BÁC SĨ KHI:**
+    • Sốt > 40°C • Kèm nôn/tiêu chảy
+    • Co giật • Bỏ ăn > 24h
+
+    Hãy cho tôi biết nhiệt độ cụ thể nếu bạn đã đo!`;
+        }
+        
+        if (isCat) {
+            return `🌡️ **SỐT Ở MÈO - CHI TIẾT:** 🌡️
+
+    **NHIỆT ĐỘ BÌNH THƯỜNG:** 38.0 - 39.2°C
+    **SỐT NHẸ:** 39.3 - 39.7°C  
+    **SỐT CAO:** 39.8 - 40.5°C
+    **SỐT RẤT CAO (CẤP CỨU):** Trên 40.5°C
+
+    **DẤU HIỆU ĐẶC TRƯNG Ở MÈO:**
+    • Tìm chỗ mát nằm • Thở hổn hển (hiếm khi)
+    • Bỏ ăn hoàn toàn • Lờ đờ, ít vận động
+    • Lông dựng đứng • Mắt third eyelid lộ rõ
+
+    **XỬ LÝ:**
+    • Nước mát luôn sẵn • Quạt nhẹ thoáng mát
+    • Khăn ẩm lau người • Không ép ăn
+
+    **CẤP CỨU NGAY KHI:**
+    • Sốt > 40.5°C • Mèo bất tỉnh
+    • Thở khó khăn • Co giật
+
+    Mèo sốt rất nguy hiểm, nên đi khám sớm!`;
+    }
+    
+    return getGeneralFeverAdvice();
+}
+
+// === XỬ LÝ NÔN MỬA CHI TIẾT ===
+function handleVomiting(message, isDog, isCat) {
+    if (isDog) {
+        return `🤢 **NÔN Ở CHÓ - CHẨN ĐOÁN CHI TIẾT:** 🤢
+
+    **PHÂN LOẠI NÔN & Ý NGHĨA:**
+    • 🟡 Nôn khan + ho = Hội chứng ho cũi
+    • ⚪ Nôn bọt trắng = Dịch vị (viêm dạ dày)  
+    • 🟡 Nôn bọt vàng = Dịch mật (viêm tá tràng)
+    • 🔴 Nôn ra máu đỏ tươi = Xuất huyết dạ dày
+    • 🔴 Nôn ra máu nâu = Xuất huyết tiêu hóa trên
+    • 🔴 Nôn ra phân = Tắc ruột (CẤP CỨU)
+
+    **NGUYÊN NHÂN THEO ĐỘ TUỔI:**
+    🐕 **CHÓ CON (dưới 1 tuổi):**
+    • Nuốt dị vật • Giun sán • Parvovirus
+    • Ngộ độc • Thay đổi thức ăn đột ngột
+
+    🐕 **CHÓ TRƯỞNG THÀNH (1-7 tuổi):**
+    • Viêm tụy • Viêm dạ dày • Ngộ độc
+    • Bệnh gan/thận • Dị ứng thức ăn
+
+    🐕 **CHÓ GIÀ (trên 7 tuổi):**
+    • Ung thư • Suy thận • Bệnh gan mãn
+    • Khối u đường tiêu hóa
+
+    **XỬ LÝ TẠI NHÀ - 4 BƯỚC:**
+    1️⃣ **Ngừng cho ăn** 4-6 giờ (vẫn cho uống nước)
+    2️⃣ **Bù nước**: Nước điện giải pha loãng, cho uống từng ngụm nhỏ
+    3️⃣ **Thức ăn nhẹ**: Cơm trắng + thịt gà luộc (không da) + bí đỏ nghiền
+    4️⃣ **Chia nhỏ bữa**: 4-6 bữa/ngày, mỗi bữa ít một
+
+    **THUỐC/DỤNG CỤ CẦN THIẾT:**
+    • Men vi sinh cho chó • Nước điện giải
+    • Syringe bơm nước • Thức ăn hạt nhỏ, dễ tiêu
+
+    **🚨 CẦN BÁC SĨ NGAY KHI:**
+    • Nôn > 3 lần/giờ • Nôn ra máu
+    • Bụng chướng cứng • Li bì, sốt cao
+    • Không uống được nước • Chó con dưới 6 tháng
+
+    **Hãy cho tôi biết thêm:**
+    • Màu sắc chất nôn? • Tần suất nôn?
+    • Có kèm tiêu chảy không? • Chó có uống nước được không?`;
+        }
+        
+        if (isCat) {
+            return `🤢 **NÔN Ở MÈO - CHẨN ĐOÁN CHI TIẾT:** 🤢
+
+    **PHÂN LOẠI ĐẶC TRƯNG Ở MÈO:**
+    • 🟢 Nôn búi lông = Bình thường (1-2 lần/tuần)
+    • 🟡 Nôn ngay sau ăn = Nuốt nhanh, dị ứng thức ăn
+    • 🟡 Nôn dịch vàng = Viêm dạ dày ruột
+    • 🔴 Nôn ra máu = Viêm loét dạ dày
+    • 🔴 Nôn kèm tiêu chảy = Nhiễm trùng nặng
+
+    **NGUYÊN NHÂN PHỔ BIẾN:**
+    🐈 **MÈO TRONG NHÀ:**
+    • Búi lông • Nuốt dị vật (dây, nhựa)
+    • Thay đổi thức ăn • Căng thẳng
+
+    🐈 **MÈO MỌI LỨA TUỔI:**
+    • Bệnh thận • Cường giáp • Viêm tụy
+    • Tiểu đường • Bệnh gan
+
+    **XỬ LÝ TẠI NHÀ CHO MÈO:**
+    1️⃣ **Malt paste**: 2-3cm/ngày để tống lông
+    2️⃣ **Thức ăn nhạy cảm**: Hạt nhỏ, dễ tiêu hóa
+    3️⃣ **Chia bữa nhỏ**: 4-6 bữa/ngày, mỗi bữa ít
+    4️⃣ **Nước sạch**: Luôn có sẵn, thay 2 lần/ngày
+
+    **THỨC ĂN ĐẶC BIỆT:**
+    • Pate dễ tiêu • Thịt gà xay nhuyễn
+    • Cá hồi hấp • Tránh thức ăn lạ
+
+    **🚨 CẤP CỨU MÈO KHI:**
+    • Nôn > 4 lần/ngày • Nôn ra máu
+    • Bỏ ăn > 24 giờ • Li bì, yếu ớt
+    • Kèm tiêu chảy nặng • Không uống nước
+
+    **LƯU Ý QUAN TRỌNG:**
+    Mèo nhịn ăn quá 48h có thể bị lipidosis gan - TỬ VONG CAO!
+
+    **Hãy cho tôi biết:**
+    • Mèo có nôn búi lông không? • Đã bỏ ăn bao lâu?
+    • Có tiêu chảy không? • Màu sắc chất nôn?`;
+        }
+        
+        return `🤢 **NÔN Ở THÚ CƯNG - THÔNG TIN CHUNG:** 🤢
+
+    Hãy cho biết là "chó bị nôn" hay "mèo bị nôn" để được tư vấn chi tiết!
+
+    **XỬ LÝ CHUNG:**
+    • Ngừng cho ăn 4-6h • Cho uống nước từng ít một
+    • Theo dõi sát • Đến bác sĩ nếu nặng
+
+    **CẦN BÁC SĨ KHI:**
+    • Nôn nhiều lần • Nôn ra máu
+    • Bỏ ăn, li bì • Kèm các triệu chứng khác`;
+}
+
+// === DINH DƯỠNG CHÓ CON CHI TIẾT ===
+function getDogPuppyNutrition() {
+    return `🐶 **DINH DƯỠNG CHÓ CON (0-12 THÁNG) - HƯỚNG DẪN CHI TIẾT** 🐶
+
+    **📅 LỊCH ĂN THEO TỪNG GIAI ĐOẠN:**
+
+    🍼 **0-3 TUẦN (SƠ SINH):**
+    • Hoàn toàn bú sữa mẹ
+    • Nếu mất mẹ: Sữa thay thế chuyên dụng
+    • Cứ 2-3 giờ cho bú 1 lần
+    • Khối lượng: 15-30ml/lần tùy giống
+
+    🥣 **3-8 TUẦN (CAI SỮA):**
+    • Sữa + thức ăn khô ngâm mềm
+    • 4-6 bữa/ngày • Lượng: 30-50g/kg cân nặng
+    • Thức ăn: Loại dành riêng cho chó con
+
+    🍚 **2-4 THÁNG (PHÁT TRIỂN NHANH):**
+    • 4 bữa/ngày • Lượng: 50-75g/kg cân nặng
+    • Protein: 28-32% • Chất béo: 15-20%
+    • Thức ăn khô cỡ nhỏ, dễ nhai
+
+    🍗 **4-6 THÁNG (TĂNG TRƯỞNG):**
+    • 3 bữa/ngày • Lượng: 60-80g/kg cân nặng
+    • Tăng đạm chất lượng cao • Bổ sung DHA
+
+    🥩 **6-12 THÁNG (HOÀN THIỆN):**
+    • 2-3 bữa/ngày • Lượng: 50-70g/kg cân nặng
+    • Chuyển dần sang thức ăn trưởng thành
+
+    **📊 THÀNH PHẦN DINH DƯỠNG LÝ TƯỞNG:**
+
+    ⚖️ **TỶ LỆ CHUẨN:**
+    • Protein: 28-32% (thịt gà, cá, bò)
+    • Chất béo: 15-20% (dầu cá, mỡ gà)
+    • Canxi: 1-1.8% • Phospho: 0.8-1.6%
+    • Tỷ lệ Ca:P = 1.2:1 (QUAN TRỌNG)
+    • DHA: 0.05-0.1% cho não bộ
+
+    🔥 **NĂNG LƯỢNG:**
+    • 200-300 kcal/kg cân nặng/ngày
+    • Tùy mức độ vận động
+
+    **🐕 THEO GIỐNG CHÓ:**
+
+    🔸 **GIỐNG NHỎ (Poodle, Chihuahua, Phốc):**
+    • Cần nhiều calo hơn (tỷ lệ trao đổi chất cao)
+    • Thức ăn hạt siêu nhỏ • Dễ bị hạ đường huyết
+    • Nên chia 4-5 bữa/ngày
+
+    🔸 **GIỐNG VỪA (Corgi, Beagle, Pug):**
+    • Lượng thức ăn trung bình • Dễ béo phì
+    • Kiểm soát cân nặng từ nhỏ
+
+    🔸 **GIỐNG LỚN (Golden, Husky, Labrador):**
+    • KIỂM SOÁT CANXI nghiêm ngặt
+    • Tránh thừa canxi gây loạn sản xương hông
+    • Thức ăn cho giống lớn, phát triển chậm
+
+    🔸 **GIỐNG KHỔNG LỒ (Great Dane, Saint Bernard):**
+    • Phát triển RẤT CHẬM • Ít calo, đủ dinh dưỡng
+    • Thức ăn chuyên biệt cho giống khổng lồ
+
+    **🍖 THỨC ĂN TỰ NHIÊN BỔ SUNG:**
+
+    ✅ **THỰC PHẨM TỐT:**
+    • Thịt gà luộc không da • Cá hồi/hồi hấp (2 lần/tuần)
+    • Sữa chua không đường • Cà rốt luộc mềm
+    • Bí đỏ nghiền • Trứng gà luộc chín
+
+    ❌ **THỰC PHẨM CẤM:**
+    • Socola • Hành, tỏi • Nho, nho khô
+    • Xương nhọn • Đồ ngọt • Caffein
+
+    **💧 NƯỚC UỐNG:**
+    • Luôn có nước sạch • Thay 2-3 lần/ngày
+    • Lượng nước: 50-100ml/kg/ngày
+
+    **⚠️ DẤU HIỆU DINH DƯỠNG TỐT:**
+    • Phân thành khuôn, màu nâu • Lông bóng mượt
+    • Năng động, vui vẻ • Tăng cân đều đặn
+
+    **🚨 DẤU HIỆU BẤT THƯỜNG:**
+    • Tiêu chảy, nôn • Chậm lớn • Lông xơ xác
+    • Còi cọc • Bụng to bất thường
+
+    **Hãy cho tôi biết:**
+    • Giống chó cụ thể? • Cân nặng hiện tại?
+    • Đang dùng thức ăn gì? • Có vấn đề sức khỏe không?`;
+}
+
+// === DINH DƯỠNG MÈO CON CHI TIẾT ===
+function getCatKittenNutrition() {
+    return `🐱 **DINH DƯỠNG MÈO CON (0-12 THÁNG) - HƯỚNG DẪN CHI TIẾT** 🐱
+
+    **📅 LỊCH ĂN THEO TUẦN TUỔI:**
+
+    🍼 **0-4 TUẦN (BÚ MẸ HOÀN TOÀN):**
+    • Sữa mẹ là tốt nhất • Cứ 2-3 giờ bú 1 lần
+    • Nếu mất mẹ: Sữa thay thế chuyên dụng cho mèo
+    • KHÔNG dùng sữa bò (gây tiêu chảy)
+
+    🥛 **4-8 TUẦN (CAI SỮA):**
+    • Sữa + pate/cháo thịt xay nhuyễn
+    • 6-8 bữa/ngày • Lượng: 20-30g/kg cân nặng
+    • Bắt đầu tập ăn thức ăn khô ngâm mềm
+
+    🍖 **2-4 THÁNG (PHÁT TRIỂN NHANH):**
+    • 4-6 bữa/ngày • Lượng: 30-40g/kg cân nặng
+    • Thức ăn khô ngâm mềm hoặc hạt nhỏ
+    • Protein: 30-40% • Chất béo: 18-25%
+
+    🐟 **4-6 THÁNG (TĂNG TRƯỞNG MẠNH):**
+    • 3-4 bữa/ngày • Lượng: 40-50g/kg cân nặng
+    • Tăng đạm động vật • Bổ sung Taurine đầy đủ
+
+    🍗 **6-12 THÁNG (HOÀN THIỆN):**
+    • 2-3 bữa/ngày • Lượng: 50-60g/kg cân nặng
+    • Chuyển dần sang thức ăn trưởng thành
+
+    **📊 THÀNH PHẦN BẮT BUỘC CHO MÈO:**
+
+    ⚖️ **DINH DƯỠNG TỐI THIỂU:**
+    • Protein: 30-40% (thịt, cá, gia cầm)
+    • Taurine: 500-750mg/kg thức ăn (BẮT BUỘC)
+    • Chất béo: 18-25% (dầu cá, mỡ gà)
+    • Arachidonic acid: 0.02% (có trong mỡ động vật)
+    • Vitamin A: 5000-10000 IU/kg (mèo không tổng hợp được)
+    • Vitamin D: 500-1000 IU/kg
+
+    🔥 **NĂNG LƯỢNG:**
+    • 200-250 kcal/kg cân nặng/ngày
+    • Mèo con cần gấp 2-3 lần mèo trưởng thành
+
+    **💧 TẦM QUAN TRỌNG CỦA NƯỚC:**
+    • Mèo uống ít nước tự nhiên • Ưu tiên thức ăn ướt
+    • Nước sạch luôn có sẵn • Nhiều bát nước ở các vị trí
+
+    **🍲 TỶ LỆ THỨC ĂN ƯỚT/KHÔ LÝ TƯỞNG:**
+
+    🥫 **MÈO CON DƯỚI 6 THÁNG:**
+    • 70% ướt + 30% khô • Ưu tiên pate mềm
+    • Thức ăn ướt cung cấp đủ nước
+
+    🍚 **MÈO CON TRÊN 6 THÁNG:**
+    • 60% ướt + 40% khô • Kết hợp đa dạng
+    • Thức ăn khô giúp làm sạch răng
+
+    **🐈 THEO GIỐNG MÈO:**
+
+    🔸 **MÈO TA (DOMESTIC SHORTHAIR):**
+    • Dễ tính, ăn uống đa dạng • Sức đề kháng tốt
+    • Vẫn cần đủ Taurine và Vitamin A
+
+    🔸 **MÈO BA TƯ (PERSIAN):**
+    • Mặt phẳng, khó ăn • Cần hạt hình chữ V
+    • Dễ bị búi lông • Cần bổ sung dầu
+
+    🔸 **MÈO XIÊM (SIAMESE):**
+    • Năng động, cần nhiều năng lượng
+    • Nhu cầu đạm cao hơn • Dễ bị béo phì nếu ít vận động
+
+    🔸 **MÈO LÔNG DÀI (MAINE COON, RAGDOLL):**
+    • Cần bổ sung dầu để tránh búi lông
+    • Thức ăn chuyên cho lông dài • Chải lông thường xuyên
+
+    **🍖 THỨC ĂN TỰ NHIÊN BỔ SUNG:**
+
+    ✅ **THỰC PHẨM TỐT:**
+    • Thịt gà xay nhuyễn • Cá hồi/hồi hấp chín
+    • Gan gà (1 lần/tuần) • Lòng đỏ trứng luộc
+    • Sữa chuyên dụng cho mèo • Bí đỏ nghiền
+
+    ❌ **THỰC PHẨM CẤM:**
+    • Hành, tỏi • Socola • Caffein
+    • Nho, nho khô • Đồ ngọt • Xương
+
+    **🚨 DẤU HIỆU DINH DƯỠNG TỐT:**
+    • Tăng cân đều • Lông bóng mượt
+    • Mắt sáng • Năng động, tò mò
+    • Phân thành khuôn
+
+    **⚠️ DẤU HIỆU BẤT THƯỜNG:**
+    • Chậm lớn • Tiêu chảy, nôn • Lông xơ xác
+    • Mắt đục • Yếu ớt, ít vận động
+
+    **🎯 LƯU Ý QUAN TRỌNG:**
+    • Mèo là động vật ăn thịt bắt buộc
+    • Cần đạm động vật chất lượng cao
+    • Taurine là KHÔNG THỂ THIẾU
+    • Thiếu Taurine gây mù lòa, bệnh tim
+
+    **Hãy cho tôi biết:**
+    • Giống mèo cụ thể? • Cân nặng hiện tại?
+    • Đang ăn thức ăn gì? • Có vấn đề sức khỏe không?`;
+    }
+
+// === CÁC HÀM DINH DƯỠNG KHÁC ===
+function getDogAdultNutrition() {
+    return `🐕 **DINH DƯỠNG CHÓ TRƯỞNG THÀNH (1-7 TUỔI) - CHI TIẾT** 🐕
+
+    **📊 LƯỢNG THỨC ĂN THEO CÂN NẶNG:**
+
+    ⚖️ **THEO TRỌNG LƯỢNG CƠ THỂ:**
+    • Dưới 5kg: 120-200g/ngày
+    • 5-10kg: 200-300g/ngày  
+    • 10-20kg: 300-450g/ngày
+    • 20-35kg: 450-650g/ngày
+    • Trên 35kg: 650-900g/ngày
+
+    **🏃 THEO MỨC ĐỘ HOẠT ĐỘNG:**
+
+    🚶 **ÍT VẬN ĐỘNG (Trong nhà, ít chơi):**
+    • Giảm 10-20% lượng thức ăn
+    • Thức ăn ít calo • Tăng chất xơ
+    • Tránh đồ ăn vặt
+
+    🏃 **HOẠT ĐỘNG TRUNG BÌNH (Đi dạo hàng ngày):**
+    • Theo khuyến cáo trên bao bì
+    • Cân bằng dinh dưỡng • Đủ protein
+
+    🏃‍♂️ **HOẠT ĐỘNG CAO (Thể thao, làm việc):**
+    • Tăng 20-40% lượng thức ăn
+    • Thức ăn năng lượng cao • Bổ sung đạm
+
+    **📈 THÀNH PHẦN DINH DƯỠNG CHI TIẾT:**
+
+    🍖 **PROTEIN (22-28%):**
+    • Thịt gà, cá, bò, cừu • Trứng
+    • Đạm chất lượng cao • Dễ tiêu hóa
+
+    🥑 **CHẤT BÉO (10-15%):**
+    • Omega-3,6 • Dầu cá • Mỡ gà
+    • Giúp da lông khỏe • Năng lượng
+
+    🌾 **CARB (30-50%):**
+    • Ngũ cốc • Gạo lứt • Khoai tây
+    • Năng lượng • Chất xơ
+
+    🥦 **CHẤT XƠ (2-4%):**
+    • Cải bó xôi • Bí đỏ • Cà rốt
+    • Hỗ trợ tiêu hóa • Ngừa táo bón
+
+    **💧 NƯỚC UỐNG:**
+    • 50-60ml/kg/ngày • Nước sạch luôn có sẵn
+    • Thay nước 2-3 lần/ngày
+
+    **Hãy cho tôi biết thêm về chó của bạn để tư vấn chính xác hơn!`;
+}
+
+function getDogSeniorNutrition() {
+    return `🐩 **DINH DƯỠNG CHÓ GIÀ (7+ TUỔI) - CHI TIẾT** 🐩
+
+    **🩺 ĐIỀU CHỈNH THEO BỆNH LÝ:**
+
+    🧬 **BỆNH THẬN:**
+    • Giảm protein • Giảm phospho
+    • Tăng chất béo • Kiểm soát natri
+    • Thức ăn hạt nhỏ, mềm
+
+    🦴 **VIÊM KHỚP:**
+    • Bổ sung glucosamine • Chondroitin
+    • Omega-3 chống viêm • Duy trì cân nặng lý tưởng
+
+    ❤️ **BỆNH TIM:**
+    • Giảm natri • Tăng omega-3
+    • Bổ sung taurine • Kiểm soát cân nặng
+
+    🩸 **TIỂU ĐƯỜNG:**
+    • Carb phức hợp • Chất xơ hòa tan
+    • Ổn định đường huyết • Chia nhỏ bữa ăn
+
+    **📊 THÀNH PHẦN ĐẶC BIỆT:**
+
+    🍖 **PROTEIN (25-30%):**
+    • Chất lượng cao • Dễ tiêu hóa
+    • Giảm gánh nặng cho thận
+
+    🥑 **CHẤT BÉO (10-12%):**
+    • Giảm so với trưởng thành • Vẫn đủ omega
+    • Năng lượng dễ hấp thu
+
+    🥦 **CHẤT XƠ (5-8%):**
+    • Tăng so với trẻ • Chống táo bón
+    • Hỗ trợ tiêu hóa
+
+    **💊 BỔ SUNG CHỨC NĂNG:**
+
+    🔹 **Glucosamine:** 500-1000mg/ngày
+    🔹 **Omega-3:** 100mg/kg cân nặng  
+    🔹 **Chất chống oxy hóa:** Vitamin E, C
+    🔹 **Probiotic:** Hỗ trợ tiêu hóa
+
+    **Hãy cho tôi biết tình trạng sức khỏe cụ thể của chó!`;
+}
+
+// Tương tự cho các hàm mèo trưởng thành và mèo già
+function getCatAdultNutrition() {
+    return `🐈 **DINH DƯỠNG MÈO TRƯỞNG THÀNH (1-7 TUỔI) - CHI TIẾT** 🐈
+
+    **📊 LƯỢNG THỨC ĂN THEO CÂN NẶNG:**
+
+    ⚖️ **THỨC ĂN KHÔ - THEO CÂN NẶNG:**
+    • Mèo 2-3kg: 40-50g/ngày
+    • Mèo 3-4kg: 50-60g/ngày  
+    • Mèo 4-5kg: 60-70g/ngày
+    • Mèo 5-6kg: 70-80g/ngày
+    • Mèo 6-7kg: 80-90g/ngày
+
+    🥫 **THỨC ĂN ƯỚT - THEO CÂN NẶNG:**
+    • Mèo 2-3kg: 150-200g/ngày
+    • Mèo 3-4kg: 200-250g/ngày
+    • Mèo 4-5kg: 250-300g/ngày
+    • Mèo 5-6kg: 300-350g/ngày
+
+    **🔄 TỶ LỆ THỨC ĂN ƯỚT/KHÔ LÝ TƯỚNG:**
+
+    🍽️ **LỰA CHỌN TỐI ƯU:**
+    • 70% thức ăn ướt + 30% thức ăn khô
+    • Thức ăn ướt: Cung cấp đủ nước, tốt cho thận
+    • Thức ăn khô: Làm sạch răng, tiện lợi
+
+    💧 **CHỈ ĂN KHÔ:**
+    • Đảm bảo luôn có đủ nước sạch
+    • Nhiều bát nước ở các vị trí
+    • Có thể dùng đài phun nước
+
+    🥫 **CHỈ ĂN ƯỚT:**
+    • 200-300g/ngày tùy cân nặng
+    • Chia 2-3 bữa/ngày
+    • Vệ sinh bát ăn thường xuyên
+
+    **📈 THÀNH PHẦN DINH DƯỠNG QUAN TRỌNG:**
+
+    🍖 **ĐẠM ĐỘNG VẬT (Trên 30%):**
+    • Mèo là động vật ăn thịt bắt buộc
+    • Nguồn đạm chất lượng: Thịt gà, cá, bò
+    • Tránh đạm thực vật (khó hấp thu)
+
+    💧 **ĐỘ ẨM THỨC ĂN:**
+    • Thức ăn ướt: 70-80% độ ẩm
+    • Thức ăn khô: 10-12% độ ẩm
+    • Mèo uống ít nước tự nhiên
+
+    🧬 **TAURINE (500-750mg/kg):**
+    • BẮT BUỘC cho mèo • Ngừa mù lòa, bệnh tim
+    • Có sẵn trong thịt, cá tươi
+    • Mất đi khi nấu chín kỹ
+
+    ⚖️ **MAGIE (0.08-0.1%):**
+    • Kiểm soát để tránh sỏi tiết niệu
+    • Giữ pH nước tiểu 6.0-6.5 (acid nhẹ)
+
+    **🏠 THEO LOẠI MÈO:**
+
+    🐈 **MÈO TRONG NHÀ:**
+    • Ít vận động • Giảm 10-20% lượng thức ăn
+    • Thức ăn ít calo • Tránh béo phì
+    • Tăng cường chơi đùa
+
+    🐈 **MÈO NGOÀI TRỜI:**
+    • Hoạt động nhiều • Tăng 10-20% lượng thức ăn
+    • Nhu cầu năng lượng cao • Theo dõi cân nặng
+
+    ✂️ **MÈO ĐÃ TRIỆT SẢN:**
+    • Giảm 15-25% calo so với bình thường
+    • Trao đổi chất chậm hơn • Dễ béo phì
+    • Thức ăn cho mèo triệt sản
+
+    **🐾 THEO GIỐNG MÈO:**
+
+    🔸 **MÈO BA TƯ (PERSIAN):**
+    • Mặt phẳng, khó ăn • Cần hạt hình chữ V
+    • Dễ bị búi lông • Bổ sung dầu, malt paste
+    • Chải lông hàng ngày
+
+    🔸 **MÈO XIÊM (SIAMESE):**
+    • Năng động • Nhu cầu đạm cao
+    • Dễ béo phì nếu ít vận động • Kiểm soát cân nặng
+
+    🔸 **MÈO LÔNG DÀI (MAINE COON, RAGDOLL):**
+    • Cần bổ sung dầu • Thức ăn chống búi lông
+    • Chải lông thường xuyên • Uống nhiều nước
+
+    🔸 **MÈO TA (DOMESTIC):**
+    • Sức đề kháng tốt • Dễ chăm sóc
+    • Vẫn cần đủ Taurine và vitamin
+
+    **🍖 THỨC ĂN TỰ NHIÊN BỔ SUNG:**
+
+    ✅ **THỰC PHẨM TỐT:**
+    • Thịt gà luộc • Cá hồi/hồi hấp (2-3 lần/tuần)
+    • Gan gà (1 lần/tuần) • Lòng đỏ trứng luộc
+    • Sữa chua không đường • Bí đỏ nghiền
+
+    ❌ **THỰC PHẨM CẤM:**
+    • Hành, tỏi • Socola • Caffein
+    • Nho, nho khô • Đồ ngọt • Rượu bia
+
+    **📅 LỊCH ĂN LÝ TƯỞNG:**
+
+    🌅 **BUỔI SÁNG (7-8h):**
+    • Thức ăn ướt • 40% tổng lượng ăn
+    • Sau khi ăn nên nghỉ ngơi
+
+    🌇 **BUỔI CHIỀU (17-18h):**
+    • Thức ăn khô • 30% tổng lượng ăn
+    • Có thể để tự do ăn cả đêm
+
+    🌃 **BUỔI TỐI (TÙY CHỌN):**
+    • Thức ăn ướt • 30% tổng lượng ăn
+    • Hoặc đồ ăn vặt lành mạnh
+
+    **💧 NƯỚC UỐNG - CỰC KỲ QUAN TRỌNG:**
+
+    💦 **LƯỢNG NƯỚC CẦN:**
+    • 50-60ml/kg cân nặng/ngày
+    • Mèo ăn khô cần nhiều nước hơn
+
+    🚰 **KHUYẾN KHÍCH UỐNG NƯỚC:**
+    • Nhiều bát nước ở các vị trí
+    • Bát nước rộng, không chạm râu
+    • Đài phun nước cho mèo
+    • Nước luôn sạch, thay 2 lần/ngày
+
+    **⚠️ DẤU HIỆU DINH DƯỠNG TỐT:**
+    • Cân nặng ổn định • Lông bóng mượt
+    • Mắt sáng • Năng động • Phân thành khuôn
+
+    **🚨 DẤU HIỆU BẤT THƯỜNG:**
+    • Béo phì • Gầy yếu • Lông xơ xác
+    • Tiêu chảy/táo bón • Nôn mửa
+
+    **Hãy cho tôi biết:**
+    • Cân nặng hiện tại của mèo? • Mèo trong nhà hay ngoài trời?
+    • Đã triệt sản chưa? • Đang dùng thức ăn gì?`;
+}
+
+function getCatSeniorNutrition() {
+    return `🐈⬛ **DINH DƯỠNG MÈO GIÀ (7+ TUỔI) - CHI TIẾT** 🐈⬛
+
+    **🩺 THAY ĐỔI SINH LÝ MÈO GIÀ:**
+
+    👃 **KHỨU GIÁC GIẢM:**
+    • Thức ăn có mùi hấp dẫn hơn
+    • Làm ấm thức ăn để tăng mùi
+    • Thức ăn ướt thơm ngon hơn khô
+
+    🦷 **RĂNG YẾU:**
+    • Thức ăn mềm, ướt • Hạt nhỏ, dễ nhai
+    • Tránh thức ăn cứng, khó nhai
+
+    🍽️ **TIÊU HÓA KÉM:**
+    • Thức ăn dễ tiêu hóa • Nhiều chất xơ
+    • Chia nhỏ bữa ăn • Men vi sinh
+
+    💧 **UỐNG ÍT NƯỚC:**
+    • Tăng thức ăn ướt • Nhiều bát nước
+    • Đài phun nước • Nước luôn sạch
+
+    **🩺 ĐIỀU CHỈNH THEO BỆNH LÝ:**
+
+    🧬 **BỆNH THẬN MÃN:**
+    • Protein CHẤT LƯỢNG CAO • Ít phospho
+    • Giảm natri • Tăng độ ẩm thức ăn
+    • Thức ăn chuyên cho thận
+
+    🩸 **TIỂU ĐƯỜNG:**
+    • Low-carb, high-protein • Ổn định đường huyết
+    • Chia nhỏ bữa ăn • Tránh đồ ngọt
+
+    🦴 **VIÊM KHỚP:**
+    • Bổ sung omega-3 • Glucosamine
+    • Duy trì cân nặng lý tưởng • Thức ăn mềm
+
+    ⚖️ **BÉO PHÌ:**
+    • Giảm 20-30% calo • Tăng đạm, giảm béo
+    • Thức ăn ít calo • Tăng vận động
+
+    **📊 THÀNH PHẦN ĐẶC BIỆT CHO MÈO GIÀ:**
+
+    🍖 **PROTEIN (35-45%):**
+    • Chất lượng cao • Dễ tiêu hóa
+    • Duy trì khối cơ • Giảm teo cơ
+
+    🥑 **CHẤT BÉO (12-18%):**
+    • Giảm so với trẻ • Đủ omega-3,6
+    • Năng lượng dễ hấp thu • Giảm gánh gan
+
+    🥦 **CHẤT XƠ (3-5%):**
+    • Chống táo bón • Hỗ trợ tiêu hóa
+    • Kiểm soát cân nặng
+
+    🧪 **PHOSPHO (Dưới 0.6%):**
+    • Bảo vệ thận • Giảm gánh nặng thận
+    • Quan trọng với mèo có vấn đề thận
+
+    **💊 BỔ SUNG CHỨC NĂNG:**
+
+    🔹 **Vitamin B complex:** Cho mèo biếng ăn
+    🔹 **Omega-3:** 100mg/kg cân nặng - chống viêm
+    🔹 **Probiotic:** Hỗ trợ tiêu hóa - hàng ngày
+    🔹 **Taurine:** VẪN CẦN 500mg/kg - không giảm
+    🔹 **Glucosamine:** 250-500mg/ngày cho khớp
+
+    **🍲 LOẠI THỨC ĂN ĐẶC BIỆT:**
+
+    🥫 **ƯU TIÊN THỨC ĂN ƯỚT:**
+    • Độ ẩm cao (>75%) • Dễ nhai, dễ tiêu
+    • Mùi hấp dẫn • Tốt cho thận
+
+    🍚 **THỨC ĂN KHÔ ĐẶC BIỆT:**
+    • Hạt nhỏ, mềm • Dễ nhai
+    • Dành riêng cho mèo già
+
+    🍖 **THỨC ĂN TỰ NHIÊN:**
+    • Thịt gà xay nhuyễn • Cá hồi hấp
+    • Trứng luộc • Sữa chua
+
+    **📅 LỊCH ĂN CHO MÈO GIÀ:**
+
+    🕖 **BỮA NHỎ THƯỜNG XUYÊN:**
+    • 4-6 bữa/ngày • Mỗi bữa ít một
+    • Tránh quá tải hệ tiêu hóa
+    • Duy trì năng lượng ổn định
+
+    🌅 **SÁNG (7h):** Thức ăn ướt - 20%
+    🕛 **TRƯA (12h):** Thức ăn khô - 20%
+    🌇 **CHIỀU (17h):** Thức ăn ướt - 30%
+    🌃 **TỐI (21h):** Thức ăn ướt - 30%
+
+    **💧 QUẢN LÝ NƯỚC UỐNG:**
+
+    🚰 **KHUYẾN KHÍCH UỐNG NƯỚC:**
+    • Nhiều bát nước khắp nhà
+    • Bát thủy tinh/inox (sạch sẽ)
+    • Nước máy lọc • Thay 2-3 lần/ngày
+    • Đài phun nước kích thích uống
+
+    **⚠️ DẤU HIỆU CẦN ĐIỀU CHỈNH:**
+
+    📉 **SUY DINH DƯỠNG:**
+    • Sụt cân • Lồi xương sống
+    • Lông xơ xác • Yếu ớt
+
+    📈 **THỪA CÂN:**
+    • Không sờ thấy xương sườn
+    • Bụng xệ • Ít vận động
+
+    🚨 **VẤN ĐỀ SỨC KHỎE:**
+    • Tiêu chảy/táo bón • Nôn mửa
+    • Uống nhiều tiểu nhiều • Bỏ ăn
+
+    **🎯 LƯU Ý QUAN TRỌNG VỚI MÈO GIÀ:**
+
+    ⚠️ **MÈO BỎ ĂN TRÊN 24H:**
+    • Có thể bị lipidosis gan
+    • TỬ VONG CAO • Cần bác sĩ ngay
+
+    ⚠️ **THEO DÕI CÂN NẶNG:**
+    • Cân mỗi tháng • Ghi chép lại
+    • Phát hiện sớm thay đổi
+
+    ⚠️ **KHÁM ĐỊNH KỲ:**
+    • 6 tháng/lần • Xét nghiệm máu
+    • Phát hiện sớm bệnh tuổi già
+
+    **Hãy cho tôi biết:**
+    • Tuổi chính xác của mèo? • Cân nặng hiện tại?
+    • Có bệnh lý gì không? • Đang dùng thuốc gì?
+    • Mèo có biếng ăn không?`;
+}
+
+// === XỬ LÝ CÁC VẤN ĐỀ KHÁC ===
+function handleSkinIssues(message) {
+    return `🧴 **DA & LÔNG - GỢI Ý TRIỆU CHỨNG:** 🧴
+Hãy mô tả cụ thể hơn:
+• "Ngứa" - vị trí nào? Bao lâu rồi?
+• "Rụng lông" - từng mảng hay toàn thân?
+• "Ghẻ" - có lây không? Ngứa nhiều không?
+• "Dị ứng" - sau khi ăn gì? Tiếp xúc gì?
+• "Bọ chét" - có thấy côn trùng không?
+
+Hoặc nói "chó bị ngứa" / "mèo rụng lông" để được tư vấn chi tiết!`;
+}
+
+function handleBehaviorIssues(message) {
+    return `😟 **HÀNH VI - GỢI Ý VẤN ĐỀ:** 😟
+Hãy cho biết cụ thể:
+• "Cắn người" - khi nào? Ai bị cắn?
+• "Sủa nhiều" - ban ngày hay đêm? Có nguyên nhân?
+• "Cào đồ" - đồ đạc nào bị hư?
+• "Đi vệ sinh bậy" - vị trí nào? Bao lâu rồi?
+• "Stress" - có thay đổi gì trong nhà?
+
+Nói "chó sủa đêm" hoặc "mèo cào sofa" để được tư vấn!`;
+}
+
+function handleBasicCare(message) {
+    return `🛁 **CHĂM SÓC - GỢI Ý:** 🛁
+Bạn muốn biết về:
+• "Tắm" - bao lâu? Sữa tắm loại nào?
+• "Đánh răng" - cách tập? Kem đánh răng nào?
+• "Cắt móng" - bao lâu? Cách cắt an toàn?
+• "Chải lông" - lược nào? Tần suất?
+
+Hỏi "cách tắm cho chó" hoặc "đánh răng cho mèo" để được hướng dẫn chi tiết!`;
+}
+
+function handleEmergency(message) {
+    return `🚨 **CẤP CỨU - GỢI Ý TRIỆU CHỨNG:** 🚨
+Nếu thú cưng có các dấu hiệu sau, CẦN BÁC SĨ NGAY:
+
+**CẤP CỨU TỨC THÌ:**
+• "Chảy máu không ngừng" • "Gãy xương" 
+• "Co giật" • "Bất tỉnh" • "Khó thở"
+
+**CẤP CỨU TRONG VÀI GIỜ:**
+• "Nôn ra máu" • "Tiêu chảy ra máu"
+• "Bụng chướng to" • "Tiểu không được"
+• "Sốt cao > 40.5°C"
+
+Hãy đưa đến bác sĩ thú y ngay lập tức!`;
+}
+
+function handleVaccination(message) {
+    return `💉 **TIÊM PHÒNG - GỢI Ý:** 💉
+Bạn muốn biết về:
+• "Lịch tiêm cho chó con" • "Lịch tiêm cho mèo con"
+• "Vaccine nào cần thiết?" • "Giá tiêm bao nhiêu?"
+• "Tác dụng phụ" • "Tiêm nhắc lại"
+
+Hỏi "lịch tiêm cho chó 2 tháng" hoặc "vaccine cho mèo" để được tư vấn!`;
+}
+
+// Các hàm get chi tiết khác...
+function getGeneralFeverAdvice() {
+    return `🌡️ **SỐT Ở THÚ CƯNG - THÔNG TIN CHUNG:** 🌡️
+Hãy cho biết là "chó bị sốt" hay "mèo bị sốt" để được tư vấn chi tiết hơn!
+
+**DẤU HIỆU CHUNG:**
+• Mũi khô nóng • Bỏ ăn • Lờ đờ
+• Thở nhanh • Run rẩy
+
+**CẦN LÀM NGAY:**
+• Đo nhiệt độ • Cho uống nước
+• Để nơi thoáng mát • Liên hệ bác sĩ nếu sốt cao`;
+}
+
+function getDogGeneralHealthAdvice() {
+    return `🐕 **SỨC KHỎE CHÓ - GỢI Ý TRIỆU CHỨNG:** 🐕
+Hãy cho biết cụ thể:
+• "Sốt" • "Nôn" • "Tiêu chảy" • "Bỏ ăn"
+• "Ho" • "Khó thở" • "Đi tiểu khó"
+• "Táo bón" • "Mắt đỏ" • "Tai có mùi"
+
+Ví dụ: "chó bị nôn và tiêu chảy" hoặc "cún bỏ ăn 2 ngày"`;
+}
+
+function getCatGeneralHealthAdvice() {
+    return `🐈 **SỨC KHỎE MÈO - GỢI Ý TRIỆU CHỨNG:** 🐈
+Hãy cho biết cụ thể:
+• "Nôn" (đặc biệt nôn búi lông)
+• "Tiểu khó" (bệnh cực kỳ nguy hiểm)
+• "Bỏ ăn" (mèo nhịn ăn rất nguy hiểm)
+• "Búi lông" • "Hắt hơi" • "Chảy nước mắt"
+
+Ví dụ: "mèo bị nôn búi lông" hoặc "mèo đi tiểu nhiều lần"`;
+}
+
+function getGeneralHealthAdvice() {
+    return `🏥 **SỨC KHỎE THÚ CƯNG - GỢI Ý:** 🏥
+Hãy cho biết:
+• Loại thú cưng ("chó" hoặc "mèo")
+• Triệu chứng cụ thể
+
+**CÁC TRIỆU CHỨNG THƯỜNG GẶP:**
+• "Sốt" • "Nôn" • "Tiêu chảy" • "Bỏ ăn"
+• "Ho" • "Khó thở" • "Đi tiểu khó"
+
+Ví dụ: "chó bị sốt" hoặc "mèo bỏ ăn"`;
 }
 
 // Gamification System
